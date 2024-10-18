@@ -13,7 +13,7 @@ router.post("/", checkToken, (req, res) => {
         });
     }
 
-    const query = "INSERT INTO artist (name, dob, gender, address, first_release_year, no_of_albums_released) VALUES (?, ?, ?, ?, ?, ?)";
+    const query = "INSERT INTO artist (name, dob, gender, address, first_release_year, no_of_albums_released, updated_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
     db.query(query, [name, dob, gender, address, first_release_year, no_of_albums_released], (err, results) => {
         if (err) {
             console.error("Error registering artist:", err);
@@ -40,9 +40,11 @@ router.get("/", checkToken, (req, res) => {
 
   db.query(totalArtistsQuery, (err, totalArtistsResult) => {
     if (err) {
+      console.log("Error:", err);
       return res.status(500).json({
         success: false,
-        message: "An error occurred while retrieving total users.",
+        message: "An error occurred while retrieving total artists.",
+        error: err
       });
     }
 
@@ -50,7 +52,7 @@ router.get("/", checkToken, (req, res) => {
     const totalPages = Math.ceil(totalArtists / limit);
 
     // Query to get users with pagination
-    const artistsQuery = `SELECT id, name, dob, gender, address, first_release_year, no_of_albums_released FROM user LIMIT ? OFFSET ?`;
+    const artistsQuery = `SELECT id, name, dob, gender, address, first_release_year, no_of_albums_released FROM artist LIMIT ? OFFSET ?`;
     db.query(artistsQuery, [limit, offset], (err, artists) => {
       if (err) {
         return res.status(500).json({
@@ -63,7 +65,7 @@ router.get("/", checkToken, (req, res) => {
         success: true,
         data: artists,
         metadata: {
-          totalUsers,
+          totalArtists,
           totalPages,
           currentPage: page,
           usersPerPage: limit,
