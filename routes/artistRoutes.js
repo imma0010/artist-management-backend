@@ -75,6 +75,36 @@ router.get("/", checkToken, (req, res) => {
   });
 });
 
+router.get("/:id", checkToken, (req, res) => {
+    const artistId = req.params.id;
+
+    // Query to get artist by ID
+    const artistQuery = 'SELECT id, name, dob, gender, address, first_release_year, no_of_albums_released FROM artist WHERE id = ?';
+
+    db.query(artistQuery, [artistId], (err, artistResult) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: "An error occurred while retrieving the artist.",
+                error: err
+            });
+        }
+
+        if (artistResult.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Artist not found.",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Artist retrieved successfully.",
+            data: artistResult[0], // Return the artist object
+        });
+    });
+});
+
 router.put("/:id", checkToken, (req, res) => {
   const { id } = req.params;
   const { name, dob, gender, address, first_release_year, no_of_albums_released } = req.body;
