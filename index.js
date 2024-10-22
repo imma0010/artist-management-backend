@@ -8,6 +8,7 @@ const db = require("./db");
 const jwt = require("jsonwebtoken");
 
 const artistRouter = require("./routes/artistRoutes");
+const songRouter = require("./routes/songRoutes");
 
 app.use(cors());
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/artist", artistRouter);
+app.use("/song", songRouter);
 
 app.post("/register", async (req, res) => {
     const {first_name, last_name, email, password, phone, dob, gender, address} = req.body;
